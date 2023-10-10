@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 env:
   REGISTRY_USER: ${{ vars.REGISTRY_USER }}
   TERRARIA_VERSION: ${{ vars.TERRARIA_VERSION }}
@@ -11,16 +11,16 @@ jobs:
     runs-on: ubuntu-latest
     environment: main
     steps:
-    - uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-    - name: Login to Docker Hub
-      run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin    
-    
-    - name: Build the Docker image
-      run: |
-        terraria_build_version=$(echo $TERRARIA_VERSION | sed 's|\.||g') \
-        docker build . --tag $REGISTRY_USER/terraria-server:$TERRARIA_VERSION \
-          --build-arg "TERRARIA_VERSION=$terraria_build_version"
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
-    - name: Push the Docker image to Docker Hub
-      run: docker push $REGISTRY_USER/terraria-version:$TERRARIA_VERSION
+      - name: Build the Docker image
+        run: |
+          terraria_build_version=$(echo $TERRARIA_VERSION | sed 's|\.||g') \
+          docker build . --tag $REGISTRY_USER/terraria-server:$TERRARIA_VERSION \
+            --build-arg="TERRARIA_VERSION=$terraria_build_version"
+
+      - name: Push the Docker image to Docker Hub
+        run: docker push $REGISTRY_USER/terraria-version:$TERRARIA_VERSION
