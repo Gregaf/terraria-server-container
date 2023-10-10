@@ -17,7 +17,7 @@ jobs:
     - name: Build the Docker image
       run: |
         terraria_build_version=$(echo "$TERRARIA_VERSION" | sed 's|\.||g') \
-        docker build . --file Dockerfile --tag $REGISTRY_USER/terraria-server:$TERRARIA_VERSION \
+        docker build . --file Dockerfile --tag "$REGISTRY_USER/terraria-server:$TERRARIA_VERSION" \
           --build-arg "TERRARIA_VERSION=$terraria_build_version"
 
     - name: Push the Docker image to Docker Hub
