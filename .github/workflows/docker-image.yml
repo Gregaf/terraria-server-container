@@ -4,7 +4,6 @@ on:
   push:
     branches: ["main"]
 env:
-  REGISTRY_USER: ${{ vars.REGISTRY_USER }}
   TERRARIA_VERSION: ${{ vars.TERRARIA_VERSION }}
 jobs:
   build:
@@ -19,8 +18,8 @@ jobs:
       - name: Build the Docker image
         run: |
           terraria_build_version=$(echo $TERRARIA_VERSION | sed 's|\.||g')
-          docker build . --tag $REGISTRY_USER/terraria-server:$TERRARIA_VERSION \
+          docker build . --tag gregaf300/terraria-server:$TERRARIA_VERSION \
             --build-arg TERRARIA_VERSION=$terraria_build_version
 
       - name: Push the Docker image to Docker Hub
-        run: docker push $REGISTRY_USER/terraria-version:$TERRARIA_VERSION
+        run: docker push gregaf300/terraria-version:$TERRARIA_VERSION
