@@ -1,0 +1,25 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Login to Docker Hub
+      run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+    
+    - name: Build the Docker image
+      run: |
+        # Must remove '.' literals to build properly
+        terraria_build_version=$(sed 's/\.//g' "$TERRARIA_VERSION")
+        docker build . --file Dockerfile $REGISTRY_USER/terraria-server:$TERRARIA_VERSION \
+          --build-arg "TERRARIA_VERSION=$terraria_build_version"        
+
+    - name: Push the Docker image to Docker Hub
+      run: docker push "$REGISTRY_USER/terraria-version:$TERRARIA_VERSION"
