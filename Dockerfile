@@ -1,4 +1,4 @@
-FROM debian:minimal AS base
+FROM debian:12-slim AS base
 
 ARG TERRARIA_VERSION=1449
 
