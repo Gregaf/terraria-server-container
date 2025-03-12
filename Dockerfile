@@ -7,7 +7,7 @@ RUN apt-get update -y \
     && apt-get autoremove -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
-    && useradd --create-home --shell /bin/bash --no-log-init --uid 1000 --gid 1000 terraria \
+    && useradd --create-home --shell /bin/bash --no-log-init terraria \
     && mkdir -p /opt/terraria && chown terraria:terraria /opt/terraria
 
 USER terraria
