@@ -1,31 +1,27 @@
-FROM debian:stable-slim AS base
+FROM debian:minimal AS base
 
 ARG TERRARIA_VERSION=1449
-ARG WORLD_MAX=3
 
 RUN apt-get update -y \
-    && apt-get install -y curl unzip tmux \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get install -y --no-install-recommends curl unzip \
+    && apt-get autoremove -y \
+    && apt-get clean && \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --shell /bin/bash --no-log-init --uid 1000 --gid 1000 terraria \
+    && mkdir -p /opt/terraria && chown terraria:terraria /opt/terraria
 
-RUN useradd --create-home --shell /bin/bash terraria
 USER terraria
-WORKDIR /home/terraria
+WORKDIR /opt/terraria
 
-RUN curl -sS "https://terraria.org/api/download/pc-dedicated-server/terraria-server-${TERRARIA_VERSION}.zip" -o /tmp/terraria.zip \
-    && unzip /tmp/terraria.zip -d /home/terraria/ \
+RUN curl -fsSL "https://terraria.org/api/download/pc-dedicated-server/terraria-server-${TERRARIA_VERSION}.zip" -o /tmp/terraria.zip \
+    && unzip /tmp/terraria.zip -d /opt/terraria/ \
     && rm /tmp/terraria.zip \
-    && rm -rf "/home/terraria/${TERRARIA_VERSION}/Windows" "/home/terraria/${TERRARIA_VERSION}/Mac" \
-    && chmod +x "/home/terraria/${TERRARIA_VERSION}/Linux/TerrariaServer.bin.x86_64"
+    && rm -rf "/opt/terraria/${TERRARIA_VERSION}/Windows" "/opt/terraria/${TERRARIA_VERSION}/Mac" \
+    && chmod +x "/opt/terraria/${TERRARIA_VERSION}/Linux/TerrariaServer.bin.x86_64"
 
-COPY ./terraria-start.sh /home/terraria/start-terraria.sh
+COPY ./terraria-start.sh /opt/terraria/start-terraria.sh
+RUN chmod +x /opt/terraria/start-terraria.sh && chown terraria:terraria /opt/terraria/start-terraria.sh
 
-USER root
-RUN chmod +x /home/terraria/start-terraria.sh
+ENV TERRARIA_SERVER_BIN="/opt/terraria/${TERRARIA_VERSION}/Linux/TerrariaServer.bin.x86_64"
 
-USER terraria
-
-ENV TERRARIA_SERVER_BIN="/home/terraria/${TERRARIA_VERSION}/Linux/TerrariaServer.bin.x86_64"
-ENV WORLD_MAX=${WORLD_MAX}
-
-CMD ["/home/terraria/start-terraria.sh"]
+CMD ["/opt/terraria/start-terraria.sh"]
